@@ -1,0 +1,38 @@
+{
+  "hash": "a34d6706",
+  "configHash": "3f538842",
+  "lockfileHash": "cae55ed8",
+  "browserHash": "c0dc8c9e",
+  "optimized": {
+    "lucide-react": {
+      "src": "../../node_modules/.pnpm/lucide-react@0.546.0_react@19.3.0/node_modules/lucide-react/dist/esm/lucide-react.js",
+      "file": "lucide-react.js",
+      "fileHash": "af7a2986",
+      "needsInterop": false
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "e8dc5408",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/.pnpm/react@19.3.0/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "7be53dbb",
+      "needsInterop": true
+    },
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/.pnpm/react@19.3.0/node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "807f3467",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "rolldown-runtime-EAsCxrDo": {
+      "file": "rolldown-runtime-EAsCxrDo.js",
+      "isDynamicEntry": false
+    }
+  }
+}
