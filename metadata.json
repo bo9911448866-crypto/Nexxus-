@@ -1,0 +1,7 @@
+{
+  "name": "Nexxus",
+  "description": "High-performance black and white gaming platform featuring all games from monkeygg2.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

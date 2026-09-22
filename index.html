@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" class="dark bg-black text-white">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexxus</title>
+    <meta name="description" content="High-performance black and white gaming platform featuring all games from monkeygg2." />
+    <meta property="og:title" content="Nexxus" />
+    <meta property="og:description" content="High-performance black and white gaming platform featuring all games from monkeygg2." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+      body {
+        background-color: #000000;
+        color: #ffffff;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      /* Custom scrollbar in monochrome */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #09090b;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #27272a;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #52525b;
+      }
+    </style>
+  </head>
+  <body class="bg-black text-zinc-100 antialiased selection:bg-white selection:text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
