@@ -12,9 +12,10 @@ export default defineConfig(() => {
       },
     },
     server: {
-      // The hosted preview does not expose Vite's HMR WebSocket endpoint.
-      // Disable Vite's client injection so the preview does not log failed socket closes.
+      // Hosted previews do not expose Vite's HMR WebSocket endpoint.
+      // Disable HMR and websocket handling so @vite/client is not injected.
       hmr: false,
+      ws: false,
       // Keep file watching available for the local dev server.
       watch: {},
     },
