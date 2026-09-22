@@ -1,0 +1,62 @@
+[
+  {
+    "id": "session_1790107770278_wtiuo2oz",
+    "ip": "66.102.21.192",
+    "device": "Windows PC",
+    "browser": "Chrome 153",
+    "os": "Windows 11 / 10",
+    "openedAt": 1790107770399,
+    "closedAt": 1790107770411,
+    "lastHeartbeat": 1790107770411,
+    "durationSeconds": 1,
+    "status": "closed",
+    "currentGame": "Browsing Library",
+    "screen": "1366x768",
+    "language": "en-US"
+  },
+  {
+    "id": "session_1790107770298_tjz7plol",
+    "ip": "66.102.21.192",
+    "device": "Windows PC",
+    "browser": "Chrome 153",
+    "os": "Windows 11 / 10",
+    "openedAt": 1790107770412,
+    "closedAt": null,
+    "lastHeartbeat": 1790107822920,
+    "durationSeconds": 53,
+    "status": "online",
+    "currentGame": "Browsing Library",
+    "screen": "1366x768",
+    "language": "en-US"
+  },
+  {
+    "id": "session_1790107823563_wy1mbt8z",
+    "ip": "18.224.140.215",
+    "device": "Linux Workstation",
+    "browser": "Chrome 151",
+    "os": "Linux",
+    "openedAt": 1790107823573,
+    "closedAt": null,
+    "lastHeartbeat": 1790107823575,
+    "durationSeconds": 1,
+    "status": "online",
+    "currentGame": "Browsing Library",
+    "screen": "800x600",
+    "language": "en-US"
+  },
+  {
+    "id": "session_1790107823581_w9kb9omc",
+    "ip": "18.224.140.215",
+    "device": "Linux Workstation",
+    "browser": "Chrome 151",
+    "os": "Linux",
+    "openedAt": 1790107823587,
+    "closedAt": null,
+    "lastHeartbeat": 1790107823587,
+    "durationSeconds": 0,
+    "status": "online",
+    "currentGame": "Browsing Library",
+    "screen": "800x600",
+    "language": "en-US"
+  }
+]
