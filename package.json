@@ -18,9 +18,9 @@
     "express": "^4.21.2",
     "dotenv": "^17.2.3",
     "motion": "^12.23.24",
-    "@mercuryworkshop/bare-mux": "^2.3.0",
-    "@mercuryworkshop/epoxy-transport": "^0.3.0",
-    "@titaniumnetwork-dev/ultraviolet": "^3.2.5",
+    "@mercuryworkshop/bare-mux": "^2.1.7",
+    "@mercuryworkshop/epoxy-transport": "^2.1.28",
+    "@titaniumnetwork-dev/ultraviolet": "^3.2.7",
     "wisp-server-node": "^1.2.0"
   },
   "devDependencies": {
