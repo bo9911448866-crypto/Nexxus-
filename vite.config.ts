@@ -5,30 +5,18 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    plugins: [
-      react(),
-      tailwindcss(),
-      {
-        name: 'disable-vite-client-in-hosted-preview',
-        transformIndexHtml: {
-          order: 'post',
-          handler(html) {
-            return html.replace(/\s*<script type="module" src="\/\@vite\/client"><\/script>\s*/g, '\n');
-          },
-        },
-      },
-    ],
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
     },
     server: {
-      // The hosted preview does not expose Vite's HMR WebSocket endpoint.
-      // Disable Vite's client injection so the preview does not log failed socket closes.
-      hmr: false,
-      // Keep file watching available for the local dev server.
-      watch: {},
+      // HMR is disabled in AI Studio via DISABLE_HMR env var.
+      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+      hmr: process.env.DISABLE_HMR !== 'true',
+      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
+      watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
 });

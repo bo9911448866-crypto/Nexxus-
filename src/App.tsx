@@ -8,15 +8,10 @@ import { GameCard } from './components/GameCard.tsx';
 import { GameListItem } from './components/GameListItem.tsx';
 import { GamePlayer } from './components/GamePlayer.tsx';
 import { IntroSequence } from './components/IntroSequence.tsx';
-import { AdminConsole } from './components/AdminConsole.tsx';
-import { telemetry } from './utils/telemetry.ts';
-import { Gamepad2, Search, ArrowUp, Star, Sparkles, Terminal } from 'lucide-react';
+import { Gamepad2, Search, ArrowUp, Star, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [activeGame, setActiveGame] = useState<Game | null>(null);
-  const [showAdminConsole, setShowAdminConsole] = useState<boolean>(() => {
-    return window.location.search.includes('admin') || window.location.hash === '#admin';
-  });
   const [showIntro, setShowIntro] = useState<boolean>(() => {
     // Check if user has already experienced intro in this tab session
     try {
@@ -106,56 +101,9 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  // Initialize client visitor telemetry
-  useEffect(() => {
-    telemetry.init();
-  }, []);
-
-  // Update telemetry when active game changes
-  useEffect(() => {
-    telemetry.updateGame(activeGame ? activeGame.title : null);
-  }, [activeGame]);
-
-  // Silent kick listener: boots user from game back to the home page with zero alerts or banners
-  useEffect(() => {
-    const handleSilentKick = () => {
-      // Exit fullscreen silently if active
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
-      }
-      // Silently return to home page
-      setActiveGame(null);
-      telemetry.updateGame(null);
-    };
-
-    const unsubscribe = telemetry.onKick(handleSilentKick);
-    window.addEventListener('nexxus:silent-kick', handleSilentKick);
-
-    return () => {
-      unsubscribe();
-      window.removeEventListener('nexxus:silent-kick', handleSilentKick);
-    };
-  }, []);
-
   // Keyboard shortcut listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isInput = ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName);
-
-      // Shift + O toggles visitor telemetry console
-      if (e.shiftKey && e.key.toLowerCase() === 'o' && !isInput) {
-        e.preventDefault();
-        setShowAdminConsole((prev) => !prev);
-        return;
-      }
-
-      if (showAdminConsole) {
-        if (e.key === 'Escape') {
-          setShowAdminConsole(false);
-        }
-        return;
-      }
-
       if (showIntro) {
         if (e.key === 'Escape') {
           handleCompleteIntro();
@@ -178,7 +126,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeGame, searchQuery, showIntro, showAdminConsole]);
+  }, [activeGame, searchQuery, showIntro]);
 
   // Filter and sort games
   const filteredAndSortedGames = useMemo(() => {
@@ -264,9 +212,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-white selection:text-black">
-      {/* Fullscreen Visitor Intelligence Console [Ctrl + O] */}
-      {showAdminConsole && <AdminConsole onClose={() => setShowAdminConsole(false)} />}
-
       {/* Fullscreen Cinematic Intro Overlay */}
       {showIntro && <IntroSequence onComplete={handleCompleteIntro} />}
 
@@ -407,18 +352,8 @@ export default function App() {
               </span>
             </div>
 
-            <div className="flex items-center gap-3 font-mono text-[11px] text-zinc-500">
+            <div className="font-mono text-[11px] text-zinc-500">
               <span>{GAMES.length} TITLES ACCESSIBLE</span> &bull; <span>BLACK & WHITE EDITION</span>
-              <span className="hidden md:inline">&bull;</span>
-              <button
-                id="footer-open-admin-btn"
-                onClick={() => setShowAdminConsole(true)}
-                className="hidden md:inline-flex items-center gap-1 rounded border border-zinc-800/80 bg-zinc-950 px-2 py-0.5 text-[10px] text-zinc-500 hover:border-zinc-700 hover:text-zinc-300 transition-colors"
-                title="Open Visitor Intelligence Console (Shift + O)"
-              >
-                <Terminal className="h-2.5 w-2.5" />
-                <span>SHIFT + O</span>
-              </button>
             </div>
 
             <button
