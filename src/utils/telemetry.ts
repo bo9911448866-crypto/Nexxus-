@@ -89,8 +89,14 @@ class TelemetryClient {
   private currentGame: string = 'Browsing Library';
   private heartbeatInterval: number | null = null;
   private kickCallbacks: Array<() => void> = [];
+  private isInitialized: boolean = false;
 
   public getSessionId() {
+    if (!this.sessionId && typeof window !== 'undefined') {
+      try {
+        this.sessionId = sessionStorage.getItem('nexxus_session_id');
+      } catch {}
+    }
     return this.sessionId;
   }
 
@@ -113,12 +119,38 @@ class TelemetryClient {
     }
   }
 
+  public resetSession() {
+    try {
+      sessionStorage.removeItem('nexxus_session_id');
+    } catch {}
+    this.sessionId = null;
+    this.isInitialized = false;
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
+
   public init() {
     if (typeof window === 'undefined') return;
+    if (this.isInitialized) return;
+    this.isInitialized = true;
 
-    // Create session ID
-    const randomPart = Math.random().toString(36).substring(2, 10);
-    this.sessionId = `session_${Date.now()}_${randomPart}`;
+    // Reuse existing session ID from sessionStorage across refreshes in the same tab
+    let existingId: string | null = null;
+    try {
+      existingId = sessionStorage.getItem('nexxus_session_id');
+    } catch {}
+
+    if (!existingId) {
+      const randomPart = Math.random().toString(36).substring(2, 10);
+      existingId = `session_${Date.now()}_${randomPart}`;
+      try {
+        sessionStorage.setItem('nexxus_session_id', existingId);
+      } catch {}
+    }
+
+    this.sessionId = existingId;
 
     const info = detectClientDevice();
 
@@ -140,6 +172,7 @@ class TelemetryClient {
     }).catch(() => {});
 
     // Heartbeat every 2.5 seconds to ensure fast kick responsiveness
+    if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
     this.heartbeatInterval = window.setInterval(async () => {
       if (!this.sessionId) return;
       try {

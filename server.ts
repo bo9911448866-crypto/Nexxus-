@@ -4,7 +4,7 @@ import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // Body parsing middleware
 app.use(express.json({ limit: '1mb' }));
@@ -454,8 +454,10 @@ app.get('/games/*', async (req: Request, res: Response): Promise<void> => {
 });
 
 async function startServer() {
+  const isProd = process.env.NODE_ENV === 'production' || (fs.existsSync(path.join(process.cwd(), 'dist', 'index.html')) && process.env.npm_lifecycle_event !== 'dev');
+
   // Vite middleware for development
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProd) {
     const vite = await createViteServer({
       server: {
         middlewareMode: true,

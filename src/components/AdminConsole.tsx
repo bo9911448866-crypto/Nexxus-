@@ -20,6 +20,7 @@ import {
   Terminal,
   UserX,
 } from 'lucide-react';
+import { telemetry } from '../utils/telemetry.ts';
 
 export interface VisitorSession {
   id: string;
@@ -59,6 +60,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({ onClose }) => {
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date());
   const [kickingId, setKickingId] = useState<string | null>(null);
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
+  const currentSessionId = telemetry.getSessionId();
 
   const handleKick = async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -151,11 +153,16 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({ onClose }) => {
     try {
       const res = await fetch('/api/telemetry/sessions', { method: 'DELETE' });
       if (res.ok) {
+        telemetry.resetSession();
         setSessions([]);
         setStats({ totalVisits: 0, onlineNow: 0, uniqueIps: 0, avgDurationSeconds: 0 });
+        setSelectedSession(null);
+        setActionFeedback('All logs cleared. Ready for fresh visits.');
+        setTimeout(() => setActionFeedback(null), 3500);
       }
     } catch (e) {
       console.error(e);
+      setActionFeedback('Failed to clear logs.');
     }
   };
 
@@ -399,6 +406,17 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({ onClose }) => {
           </div>
         </div>
 
+        {/* Owner Self-Testing Notice */}
+        <div className="rounded-sm border border-cyan-900/60 bg-cyan-950/20 p-3 mb-6 text-xs font-mono text-cyan-300 flex items-start gap-2.5">
+          <AlertCircle className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-bold uppercase tracking-wider text-cyan-200">Where these logs come from: </span>
+            <span>
+              The sessions below are <strong>real logs from your own browser testing sessions</strong> (tagged with <span className="text-white font-bold underline">YOU (THIS TAB)</span>). No bots or fake visitors are generated. Every time you opened, refreshed, or tested games like Geometry Dash Lite, your browser recorded that visit. Click <strong className="text-white">CLEAR</strong> in the top-right bar anytime to reset the history before sharing your link!
+            </span>
+          </div>
+        </div>
+
         {/* Technical Explainer Note */}
         <div className="rounded-sm border border-zinc-800 bg-zinc-950/60 p-3.5 mb-6 text-xs font-mono text-zinc-400 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-start gap-2.5">
@@ -475,24 +493,34 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({ onClose }) => {
                 ) : (
                   filteredSessions.map((s) => {
                     const isOnline = s.status === 'online';
+                    const isMySession = s.id === currentSessionId;
                     return (
                       <tr
                         key={s.id}
                         onClick={() => setSelectedSession(s)}
-                        className="group hover:bg-zinc-900/60 transition-colors cursor-pointer"
+                        className={`group transition-colors cursor-pointer ${
+                          isMySession ? 'bg-cyan-950/20 hover:bg-cyan-950/40' : 'hover:bg-zinc-900/60'
+                        }`}
                       >
                         {/* Status */}
                         <td className="py-3 px-4 whitespace-nowrap">
-                          {isOnline ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-sm border border-emerald-800/60 bg-emerald-950/40 px-2 py-0.5 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                              ONLINE
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1.5 rounded-sm border border-zinc-800 bg-black px-2 py-0.5 text-[10px] text-zinc-500 uppercase tracking-wider">
-                              CLOSED
-                            </span>
-                          )}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {isOnline ? (
+                              <span className="inline-flex items-center gap-1.5 rounded-sm border border-emerald-800/60 bg-emerald-950/40 px-2 py-0.5 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                                ONLINE
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 rounded-sm border border-zinc-800 bg-black px-2 py-0.5 text-[10px] text-zinc-500 uppercase tracking-wider">
+                                CLOSED
+                              </span>
+                            )}
+                            {isMySession && (
+                              <span className="inline-flex items-center rounded-sm border border-cyan-800/80 bg-cyan-950/80 px-1.5 py-0.5 text-[9px] font-bold text-cyan-300 uppercase tracking-wider">
+                                YOU (THIS TAB)
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* IP Address */}
@@ -559,7 +587,11 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({ onClose }) => {
 
                         {/* Kick Player from Game */}
                         <td className="py-3 px-4 whitespace-nowrap text-center">
-                          {isOnline ? (
+                          {isMySession ? (
+                            <span className="text-[10px] font-mono text-zinc-500 italic">
+                              YOUR TAB
+                            </span>
+                          ) : isOnline ? (
                             <button
                               onClick={(e) => handleKick(s.id, e)}
                               disabled={kickingId === s.id}
@@ -609,6 +641,12 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({ onClose }) => {
               </div>
 
               <div className="mt-4 space-y-2.5">
+                {selectedSession.id === currentSessionId && (
+                  <div className="rounded border border-cyan-800/80 bg-cyan-950/50 p-2 text-cyan-300 font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4 text-cyan-400" />
+                    <span>THIS IS YOUR CURRENT BROWSER SESSION (YOU / ADMIN)</span>
+                  </div>
+                )}
                 <div className="flex justify-between border-b border-zinc-900 pb-1.5">
                   <span className="text-zinc-500">STATUS:</span>
                   <span className={selectedSession.status === 'online' ? 'text-emerald-400 font-bold' : 'text-zinc-400'}>
