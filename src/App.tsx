@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { GAMES } from './data/games.ts';
-import { Game, CategoryFilter, SortOption, ViewMode, NavigationTab } from './types.ts';
+import { Game, CategoryFilter, SortOption, ViewMode } from './types.ts';
 import { Navbar } from './components/Navbar.tsx';
 import { HeroBanner } from './components/HeroBanner.tsx';
 import { FilterBar } from './components/FilterBar.tsx';
@@ -9,12 +9,10 @@ import { GameListItem } from './components/GameListItem.tsx';
 import { GamePlayer } from './components/GamePlayer.tsx';
 import { IntroSequence } from './components/IntroSequence.tsx';
 import { AdminConsole } from './components/AdminConsole.tsx';
-import { ProxyBrowserTab } from './components/ProxyBrowserTab.tsx';
 import { telemetry } from './utils/telemetry.ts';
 import { Gamepad2, Search, ArrowUp, Star, Sparkles, Terminal } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<NavigationTab>('games');
   const [activeGame, setActiveGame] = useState<Game | null>(null);
   const [showAdminConsole, setShowAdminConsole] = useState<boolean>(() => {
     return window.location.search.includes('admin') || window.location.hash === '#admin';
@@ -113,16 +111,10 @@ export default function App() {
     telemetry.init();
   }, []);
 
-  // Update telemetry when active game or active tab changes
+  // Update telemetry when active game changes
   useEffect(() => {
-    if (activeGame) {
-      telemetry.updateGame(activeGame.title);
-    } else if (activeTab === 'browser') {
-      telemetry.updateGame('Web Search / UV Proxy');
-    } else {
-      telemetry.updateGame('Browsing Library');
-    }
-  }, [activeGame, activeTab]);
+    telemetry.updateGame(activeGame ? activeGame.title : null);
+  }, [activeGame]);
 
   // Silent kick listener: boots user from game back to the home page with zero alerts or banners
   useEffect(() => {
@@ -282,24 +274,13 @@ export default function App() {
       <Navbar
         totalGames={GAMES.length}
         favoritesCount={favorites.length}
-        activeTab={activeTab}
-        onTabChange={(tab) => {
-          setActiveTab(tab);
-          if (activeGame) setActiveGame(null);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        onRandomGame={() => {
-          setActiveTab('games');
-          handleRandomGame();
-        }}
+        onRandomGame={handleRandomGame}
         onToggleFavoritesOnly={() => {
-          setActiveTab('games');
           setSelectedCategory((prev) => (prev === 'favorites' ? 'all' : 'favorites'));
         }}
-        showingFavoritesOnly={activeTab === 'games' && selectedCategory === 'favorites'}
+        showingFavoritesOnly={selectedCategory === 'favorites'}
         onPlayIntro={handlePlayIntro}
         onHomeClick={() => {
-          setActiveTab('games');
           setActiveGame(null);
           setSelectedCategory('all');
           setSearchQuery('');
@@ -318,8 +299,6 @@ export default function App() {
           onToggleFavorite={toggleFavorite}
           allGames={GAMES}
         />
-      ) : activeTab === 'browser' ? (
-        <ProxyBrowserTab onBackToGames={() => setActiveTab('games')} />
       ) : (
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
           {/* Hero Spotlight (shown when not actively searching) */}

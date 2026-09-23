@@ -24,5 +24,3 @@ export interface PlayHistoryItem {
   playCount: number;
 }
 
-export type NavigationTab = 'games' | 'browser';
-

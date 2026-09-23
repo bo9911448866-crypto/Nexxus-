@@ -1,12 +1,9 @@
 import React from 'react';
-import { Sparkles, Dices, Star, Maximize2, Minimize2, Terminal, Gamepad2, Globe } from 'lucide-react';
-import { NavigationTab } from '../types.ts';
+import { Sparkles, Dices, Star, Maximize2, Minimize2, Terminal } from 'lucide-react';
 
 interface NavbarProps {
   totalGames: number;
   favoritesCount: number;
-  activeTab: NavigationTab;
-  onTabChange: (tab: NavigationTab) => void;
   onRandomGame: () => void;
   onToggleFavoritesOnly: () => void;
   showingFavoritesOnly: boolean;
@@ -17,8 +14,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   totalGames,
   favoritesCount,
-  activeTab,
-  onTabChange,
   onRandomGame,
   onToggleFavoritesOnly,
   showingFavoritesOnly,
@@ -75,46 +70,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ARCHIVE // {totalGames} UNBLOCKED TITLES
               </p>
             </div>
-          </button>
-        </div>
-
-        {/* Navigation Tabs Switcher */}
-        <div className="flex items-center gap-1 rounded-sm border border-zinc-800 bg-zinc-950 p-1">
-          <button
-            id="nav-tab-games"
-            onClick={() => onTabChange('games')}
-            className={`flex items-center gap-1.5 rounded-sm px-2.5 sm:px-3 py-1 font-mono text-xs uppercase tracking-wider transition-all ${
-              activeTab === 'games'
-                ? 'bg-white font-bold text-black shadow-sm'
-                : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
-            }`}
-            title="Games Archive"
-          >
-            <Gamepad2 className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Games</span>
-          </button>
-
-          <button
-            id="nav-tab-browser"
-            onClick={() => onTabChange('browser')}
-            className={`flex items-center gap-1.5 rounded-sm px-2.5 sm:px-3 py-1 font-mono text-xs uppercase tracking-wider transition-all ${
-              activeTab === 'browser'
-                ? 'bg-white font-bold text-black shadow-sm'
-                : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
-            }`}
-            title="Web Search & Ultraviolet Proxy"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            <span>Search</span>
-            <span
-              className={`rounded px-1 text-[9px] font-bold ${
-                activeTab === 'browser'
-                  ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
-                  : 'bg-zinc-900 text-cyan-400 border border-zinc-750'
-              }`}
-            >
-              UV
-            </span>
           </button>
         </div>
 
