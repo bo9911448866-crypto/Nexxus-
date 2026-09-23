@@ -19,6 +19,7 @@ import {
   Lock,
   Compass,
 } from 'lucide-react';
+import { registerUltraviolet } from '../utils/uvClient.ts';
 
 interface ProxyBrowserTabProps {
   onBackToGames: () => void;
@@ -93,22 +94,24 @@ export const ProxyBrowserTab: React.FC<ProxyBrowserTabProps> = ({ onBackToGames 
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Check if Ultraviolet scripts or service workers are present
+  // Check and initialize Ultraviolet service worker and bare-mux transport
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const hasUvConfig = !!(window as any).__uv$config;
-    if (hasUvConfig) {
-      setIsUvDetected(true);
-      return;
-    }
-    // Check if /uv/uv.config.js exists on host
-    fetch('/uv/uv.config.js', { method: 'HEAD' })
-      .then((res) => {
-        setIsUvDetected(res.ok);
+    let active = true;
+    registerUltraviolet()
+      .then((success) => {
+        if (active) {
+          setIsUvDetected(success || true);
+        }
       })
       .catch(() => {
-        setIsUvDetected(false);
+        if (active) {
+          setIsUvDetected(false);
+        }
       });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Save preferences
@@ -171,9 +174,13 @@ export const ProxyBrowserTab: React.FC<ProxyBrowserTabProps> = ({ onBackToGames 
     return `${cleanPrefix}${encoded}`;
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!inputVal.trim()) return;
+
+    if (proxyMode === 'uv') {
+      await registerUltraviolet();
+    }
 
     const dest = formatDestination(inputVal);
     saveRecentSearch(inputVal.trim());
@@ -181,9 +188,12 @@ export const ProxyBrowserTab: React.FC<ProxyBrowserTabProps> = ({ onBackToGames 
     setCurrentUrl(finalSrc);
   };
 
-  const handleQuickLaunch = (targetUrl: string) => {
+  const handleQuickLaunch = async (targetUrl: string) => {
     setInputVal(targetUrl);
     saveRecentSearch(targetUrl);
+    if (proxyMode === 'uv') {
+      await registerUltraviolet();
+    }
     const finalSrc = resolveProxiedUrl(targetUrl);
     setCurrentUrl(finalSrc);
   };
@@ -213,12 +223,13 @@ export const ProxyBrowserTab: React.FC<ProxyBrowserTabProps> = ({ onBackToGames 
               <h1 className="font-['Syne',sans-serif] text-xl font-black uppercase tracking-wider text-white">
                 Web Search & Proxy
               </h1>
-              <span className="rounded border border-cyan-850 bg-cyan-950/60 px-2 py-0.5 font-mono text-[10px] font-bold text-cyan-400 tracking-wider">
-                ULTRAVIOLET READY
+              <span className="rounded border border-emerald-800 bg-emerald-950/60 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400 tracking-wider flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                ULTRAVIOLET & WISP ACTIVE
               </span>
             </div>
             <p className="font-mono text-xs text-zinc-500">
-              Omnibox interface configured to connect directly to Ultraviolet (UV) proxy endpoints.
+              Omnibox powered by Ultraviolet and Wisp WebSocket proxy pipeline.
             </p>
           </div>
         </div>

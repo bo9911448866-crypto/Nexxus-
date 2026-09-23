@@ -1,10 +1,15 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
+import { createServer as createHttpServer } from 'node:http';
 import { createServer as createViteServer } from 'vite';
+import { uvPath } from '@titaniumnetwork-dev/ultraviolet';
+import { baremuxPath } from '@mercuryworkshop/bare-mux/node';
+// @ts-ignore
+import { server as wispServer } from '@mercuryworkshop/wisp-js';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // Body parsing middleware
 app.use(express.json({ limit: '1mb' }));
@@ -333,6 +338,64 @@ app.post('/api/telemetry/kick', (req: Request, res: Response) => {
   }
 });
 
+// ==========================================
+// ULTRAVIOLET & WISP PROXY INTEGRATION
+// ==========================================
+const epoxyPath = path.resolve(process.cwd(), 'node_modules/@mercuryworkshop/epoxy-transport/dist');
+
+// Serve dynamic Ultraviolet config with correct script paths
+app.get(['/uv/uv.config.js', '/uv.config.js'], (_req: Request, res: Response) => {
+  res.type('application/javascript');
+  res.send(`/* Ultraviolet configuration for Nexxus */
+self.__uv$config = {
+  prefix: '/service/',
+  bare: '/bare/',
+  encodeUrl: Ultraviolet.codec.xor.encode,
+  decodeUrl: Ultraviolet.codec.xor.decode,
+  handler: '/uv/uv.handler.js',
+  client: '/uv/uv.client.js',
+  bundle: '/uv/uv.bundle.js',
+  config: '/uv/uv.config.js',
+  sw: '/uv/uv.sw.js',
+};
+`);
+});
+
+// Serve service worker with allowed scope header
+app.get(['/sw.js', '/uv/sw.js'], (_req: Request, res: Response) => {
+  res.setHeader('Service-Worker-Allowed', '/');
+  res.type('application/javascript');
+  res.send(`importScripts('/uv/uv.bundle.js');
+importScripts('/uv/uv.config.js');
+importScripts('/uv/uv.sw.js');
+
+const uv = new UVServiceWorker();
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    (async () => {
+      if (uv.route(event)) {
+        return await uv.fetch(event);
+      }
+      return await fetch(event.request);
+    })()
+  );
+});
+`);
+});
+
+// Static assets for Ultraviolet, Bare-Mux, and Epoxy
+app.use(
+  '/uv/',
+  (_req, res, next) => {
+    res.setHeader('Service-Worker-Allowed', '/');
+    next();
+  },
+  express.static(uvPath)
+);
+app.use('/baremux/', express.static(baremuxPath));
+app.use('/epoxy/', express.static(epoxyPath));
+
 // MIME types lookup
 const MIME_TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -454,8 +517,10 @@ app.get('/games/*', async (req: Request, res: Response): Promise<void> => {
 });
 
 async function startServer() {
+  const isProd = process.env.NODE_ENV === 'production' || (fs.existsSync(path.join(process.cwd(), 'dist', 'index.html')) && process.env.npm_lifecycle_event !== 'dev');
+
   // Vite middleware for development
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProd) {
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
@@ -472,8 +537,17 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Nexxus Server running on http://0.0.0.0:${PORT}`);
+  const server = createHttpServer(app);
+
+  // Wisp WebSocket upgrade route
+  server.on('upgrade', (req, socket, head) => {
+    if (req.url && req.url.startsWith('/wisp/')) {
+      wispServer.routeRequest(req, socket as any, head);
+    }
+  });
+
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Nexxus Server with Ultraviolet & Wisp active on http://0.0.0.0:${PORT}`);
   });
 }
 
