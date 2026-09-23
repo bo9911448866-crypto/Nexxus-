@@ -12,27 +12,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    <script>
-      // Cleanly filter out development Vite HMR WebSocket connection notices in cloud container environments
-      (function() {
-        var _origError = console.error;
-        var _origWarn = console.warn;
-        console.error = function() {
-          var msg = arguments && arguments[0];
-          if (typeof msg === 'string' && (msg.indexOf('[vite]') !== -1 || msg.indexOf('WebSocket closed without opened') !== -1)) {
-            return;
-          }
-          return _origError.apply(console, arguments);
-        };
-        console.warn = function() {
-          var msg = arguments && arguments[0];
-          if (typeof msg === 'string' && (msg.indexOf('[vite]') !== -1 || msg.indexOf('WebSocket') !== -1)) {
-            return;
-          }
-          return _origWarn.apply(console, arguments);
-        };
-      })();
-    </script>
     <style>
       body {
         background-color: #000000;

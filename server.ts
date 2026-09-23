@@ -461,6 +461,17 @@ async function startServer() {
         middlewareMode: true,
         hmr: false,
       },
+      plugins: [
+        {
+          name: 'disable-vite-client-in-hosted-preview',
+          transformIndexHtml: {
+            order: 'post' as const,
+            handler(html: string) {
+              return html.replace(/\s*<script type="module" src="\/\@vite\/client"><\/script>\s*/g, '\n');
+            },
+          },
+        },
+      ],
       appType: 'spa',
     });
     app.use(vite.middlewares);

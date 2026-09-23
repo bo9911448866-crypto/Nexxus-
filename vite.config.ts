@@ -5,7 +5,19 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      {
+        name: 'disable-vite-client-in-hosted-preview',
+        transformIndexHtml: {
+          order: 'post',
+          handler(html) {
+            return html.replace(/\s*<script type="module" src="\/\@vite\/client"><\/script>\s*/g, '\n');
+          },
+        },
+      },
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
