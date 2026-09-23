@@ -11,7 +11,7 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
   },
-  "dependencies": {
+    "dependencies": {
     "@google/genai": "^2.4.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.1",
@@ -21,14 +21,13 @@
     "vite": "^8.3.0",
     "express": "^4.21.2",
     "dotenv": "^17.2.3",
-    "motion": "^12.23.24"
-    "dependencies": {
-  "@mercuryworkshop/bare-mux": "^2.3.0",
-  "@mercuryworkshop/epoxy-transport": "^0.3.0",
-  "@titaniumnetwork-dev/ultraviolet": "^3.2.5",
-  "wisp-server-node": "^1.2.0",
-  "express": "^4.19.2"
-}
+    "motion": "^12.23.24",
+    "@mercuryworkshop/bare-mux": "^2.3.0",
+    "@mercuryworkshop/epoxy-transport": "^0.3.0",
+    "@titaniumnetwork-dev/ultraviolet": "^3.2.5",
+    "wisp-server-node": "^1.2.0"
+  }
+
 
   },
   "devDependencies": {
