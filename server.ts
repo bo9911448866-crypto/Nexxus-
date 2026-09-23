@@ -6,8 +6,11 @@ import { epoxyPath } from "@mercuryworkshop/epoxy-transport";
 import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 // @ts-ignore
 import wisp from "wisp-server-node";
-import { createServer } from "node:http";
-import { createServer } from "node:http";
+import { createServer as createHttpServer } from "node:http"; // <-- Renamed to fix duplicate error
+import express, { Request, Response } from 'express';
+import path from 'path';
+import fs from 'fs';
+import { createServer as createViteServer } from 'vite';
 import express, { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -288,7 +291,7 @@ app.use("/epoxy/", express.static(epoxyPath));
 app.use("/baremux/", express.static(baremuxPath));
 
 // Combine Express and Wisp into an HTTP Server wrapper
-const server = createServer(app);
+const server = createHttpServer(app);
 
 // Handle the high-speed WebSocket protocol proxy streams
 server.on("upgrade", (req, socket, head) => {
