@@ -1,45 +1,40 @@
 <!doctype html>
-<html lang="en" class="dark bg-black text-white">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nexxus</title>
-    <meta name="description" content="High-performance black and white gaming platform featuring all games from monkeygg2." />
-    <meta property="og:title" content="Nexxus" />
-    <meta property="og:description" content="High-performance black and white gaming platform featuring all games from monkeygg2." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <meta http-equiv="refresh" content="3;url=https://nexxus.live" />
+    <title>Nexxus has moved</title>
+    <meta name="description" content="Nexxus has moved to a new domain." />
     <style>
+      :root { color-scheme: dark; }
       body {
-        background-color: #000000;
-        color: #ffffff;
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
         margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-      }
-      /* Custom scrollbar in monochrome */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-      ::-webkit-scrollbar-track {
         background: #09090b;
+        color: #fafafa;
+        font-family: system-ui, sans-serif;
+        text-align: center;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #27272a;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #52525b;
-      }
+      main { padding: 2rem; }
+      h1 { margin: 0 0 0.75rem; font-size: clamp(1.75rem, 5vw, 3rem); }
+      p { color: #a1a1aa; }
+      a { color: #fff; font-weight: 700; }
     </style>
   </head>
-  <body class="bg-black text-zinc-100 antialiased selection:bg-white selection:text-black">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body>
+    <main>
+      <h1>This website is no longer active.</h1>
+      <p>Nexxus has moved to a new domain.</p>
+      <p>Redirecting you to <a href="https://nexxus.live">nexxus.live</a>…</p>
+    </main>
+    <script>
+      window.setTimeout(function () {
+        window.location.replace('https://nexxus.live');
+      }, 3000);
+    </script>
   </body>
 </html>
 
